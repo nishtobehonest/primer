@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primer — AI concepts, made interactive</title>
+  <meta name="description" content="Interactive explainers for AI engineering concepts. Learn by doing, not by reading." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #0A0A0F;
+      --surface:   #12121A;
+      --surface-2: #1A1A24;
+      --border:    #1E1E2E;
+      --border-2:  #2A2A3E;
+      --text:      #E2E8F0;
+      --muted:     #64748B;
+      --muted-2:   #94A3B8;
+      --blue:      #4F8EF7;
+      --teal:      #2DD4BF;
+      --green:     #22C55E;
+      --amber:     #F59E0B;
+      --red:       #EF4444;
+      --green-dim: rgba(34, 197, 94, 0.12);
+      --blue-dim:  rgba(79, 142, 247, 0.10);
+      --radius:    12px;
+      --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+      --font-body:    'Inter', system-ui, sans-serif;
+      --max-w: 820px;
+    }
+
+    [data-theme="light"] {
+      --bg:        #F8FAFC;
+      --surface:   #FFFFFF;
+      --surface-2: #F1F5F9;
+      --border:    #E2E8F0;
+      --border-2:  #CBD5E1;
+      --text:      #0F172A;
+      --muted:     #64748B;
+      --muted-2:   #94A3B8;
+      --blue:      #2563EB;
+      --teal:      #0D9488;
+      --green:     #16A34A;
+      --amber:     #D97706;
+      --green-dim: rgba(22, 163, 74, 0.10);
+      --blue-dim:  rgba(37, 99, 235, 0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s ease, color 0.2s ease;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      z-index: 200;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease, background 0.2s ease;
+    }
+    .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ── Header ── */
+    .site-header {
+      padding: 80px 0 64px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .wordmark {
+      font-family: var(--font-display);
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .tagline {
+      font-size: 15px;
+      color: var(--muted-2);
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    .tagline strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .by-line {
+      margin-top: 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .by-line a {
+      color: var(--blue);
+    }
+    .by-line a:hover { opacity: 0.8; }
+
+    .by-sep { color: var(--border-2); }
+
+    /* ── Chapter grid ── */
+    .chapters-section {
+      padding: 56px 0 80px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    /* ── Chapter card ── */
+    .chapter-card {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      align-items: start;
+      gap: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+    }
+
+    .chapter-card.live {
+      cursor: pointer;
+    }
+
+    .chapter-card.live:hover {
+      border-color: var(--border-2);
+      background: var(--surface-2);
+      transform: translateY(-1px);
+    }
+
+    .chapter-card.soon {
+      opacity: 0.55;
+    }
+
+    .chapter-num {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--muted);
+      line-height: 1;
+      padding-top: 3px;
+    }
+
+    .chapter-card.live .chapter-num {
+      color: var(--blue);
+    }
+
+    .chapter-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .chapter-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .chapter-desc {
+      font-size: 13.5px;
+      color: var(--muted-2);
+      line-height: 1.55;
+    }
+
+    .chapter-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      padding-top: 2px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .badge-live {
+      background: var(--green-dim);
+      color: var(--green);
+    }
+
+    .badge-soon {
+      background: var(--border);
+      color: var(--muted);
+    }
+
+    .open-arrow {
+      font-size: 18px;
+      color: var(--muted);
+      margin-top: 4px;
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+
+    .chapter-card.live:hover .open-arrow {
+      color: var(--blue);
+      transform: translateX(2px);
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0 40px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+    }
+
+    .footer-inner a { color: var(--muted); }
+    .footer-inner a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <button class="theme-toggle" id="theme-toggle">Light</button>
+
+  <!-- ── Header ── -->
+  <header class="site-header">
+    <div class="container">
+      <div class="wordmark">Primer</div>
+      <p class="tagline">
+        <strong>AI concepts, made interactive.</strong> Each chapter teaches one idea
+        through a live demo you can step through, break, and explore — not a video,
+        not a blog post.
+      </p>
+      <div class="by-line">
+        <span>by</span>
+        <a href="https://nishchay.me" target="_blank" rel="noopener">Nishchay Vishwanath</a>
+        <span class="by-sep">·</span>
+        <span>built while learning</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Chapter list ── -->
+  <main class="chapters-section">
+    <div class="container">
+      <div class="section-label">Chapters</div>
+
+      <div class="chapter-grid">
+
+        <!-- 01 — Live -->
+        <a class="chapter-card live" href="chapters/01-evals/">
+          <div class="chapter-num">01</div>
+          <div class="chapter-body">
+            <div class="chapter-title">AI Evals</div>
+            <div class="chapter-desc">
+              What evals are, how they work, and why every AI team needs them.
+              Six concepts, six live interactive components — from graders to pass@k.
+            </div>
+          </div>
+          <div class="chapter-meta">
+            <span class="badge badge-live">Live</span>
+            <span class="open-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 02 — Coming soon -->
+        <div class="chapter-card soon">
+          <div class="chapter-num">02</div>
+          <div class="chapter-body">
+            <div class="chapter-title">AI Agents</div>
+            <div class="chapter-desc">
+              How LLM agents plan, use tools, recover from mistakes, and know when to stop.
+            </div>
+          </div>
+          <div class="chapter-meta">
+            <span class="badge badge-soon">Soon</span>
+          </div>
+        </div>
+
+        <!-- 03 — Coming soon -->
+        <div class="chapter-card soon">
+          <div class="chapter-num">03</div>
+          <div class="chapter-body">
+            <div class="chapter-title">RAG</div>
+            <div class="chapter-desc">
+              How retrieval-augmented generation grounds AI responses in real data — and where it breaks.
+            </div>
+          </div>
+          <div class="chapter-meta">
+            <span class="badge badge-soon">Soon</span>
+          </div>
+        </div>
+
+        <!-- 04 — Coming soon -->
+        <div class="chapter-card soon">
+          <div class="chapter-num">04</div>
+          <div class="chapter-body">
+            <div class="chapter-title">Fine-tuning</div>
+            <div class="chapter-desc">
+              When to fine-tune vs. prompt engineer, how to measure the difference, and what can go wrong.
+            </div>
+          </div>
+          <div class="chapter-meta">
+            <span class="badge badge-soon">Soon</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <span>Primer — interactive AI explainers</span>
+        <a href="https://nishchay.me" target="_blank" rel="noopener">nishchay.me ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const btn = document.getElementById('theme-toggle');
+      const apply = function (light) {
+        document.documentElement.dataset.theme = light ? 'light' : '';
+        btn.textContent = light ? 'Dark' : 'Light';
+      };
+      apply(localStorage.getItem('nish-theme') === 'light');
+      btn.addEventListener('click', function () {
+        const goLight = document.documentElement.dataset.theme !== 'light';
+        apply(goLight);
+        localStorage.setItem('nish-theme', goLight ? 'light' : 'dark');
+      });
+    })();
+  </script>
+
+</body>
+</html>

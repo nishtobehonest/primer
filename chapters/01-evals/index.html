@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Evals, Explained Interactively</title>
+  <meta name="description" content="Six core concepts from Anthropic's eval framework, made tangible with live 2D grid world demos. No setup required." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <button class="theme-toggle" id="theme-toggle">Light</button>
+
+  <!-- ═══════════════════════════════════════════════
+       HEADER
+  ════════════════════════════════════════════════ -->
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title">AI Evals, Explained Interactively</h1>
+      <p class="site-attribution">
+        Based on
+        <a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents" target="_blank" rel="noopener">
+          Anthropic Engineering's eval framework ↗
+        </a>
+      </p>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════
+       INTRO
+  ════════════════════════════════════════════════ -->
+  <section class="intro-section">
+    <div class="container">
+      <p class="intro-text">
+        Traditional software is deterministic — same input, same output, always. AI systems aren't.
+        That's why we need evals: a way to measure whether an AI is actually working, not just whether
+        it looked right the one time you tried it.
+      </p>
+      <p class="intro-sub">
+        Six concepts. Six live demos. Scroll through.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════════════════ -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- ─── 01: What is an eval ─── -->
+      <section class="concept-section" id="s01">
+        <div class="section-header">
+          <span class="section-number">01</span>
+          <h2 class="section-title">What is an eval</h2>
+        </div>
+        <blockquote class="section-quote">
+          "Give an AI an input, apply grading logic to its output, measure success." — Anthropic Engineering
+        </blockquote>
+        <p class="section-body">
+          An eval is the AI equivalent of a unit test — except instead of checking one fixed output,
+          it grades behavior across many runs. Click <strong>Step</strong> below to watch the full loop
+          happen once: the agent moves, the trace records it, the grader fires.
+        </p>
+        <div class="component-card" id="component-01">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ─── 02: Eval anatomy ─── -->
+      <section class="concept-section" id="s02">
+        <div class="section-header">
+          <span class="section-number">02</span>
+          <h2 class="section-title">Eval anatomy</h2>
+        </div>
+        <blockquote class="section-quote">
+          Task · Trial · Grader · Trace · Outcome · Harness · Suite
+        </blockquote>
+        <p class="section-body">
+          The word "eval" gets used to mean six different things depending on who's talking.
+          Here they are, defined and nested in the order they actually relate to each other.
+          <strong>Hover any term</strong> to see its definition — no glossary needed.
+        </p>
+        <div class="component-card" id="component-02">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ─── 03: Single vs multi-turn ─── -->
+      <section class="concept-section" id="s03">
+        <div class="section-header">
+          <span class="section-number">03</span>
+          <h2 class="section-title">Single-turn vs multi-turn</h2>
+        </div>
+        <blockquote class="section-quote">
+          Single-turn: grade one response. Multi-turn: grade an entire trajectory.
+        </blockquote>
+        <p class="section-body">
+          Most people's mental model of an eval is single-turn: send a prompt, check the reply.
+          But agents operate across many turns — and grading a full trajectory is fundamentally different.
+          Toggle between the two modes below to feel the difference.
+        </p>
+        <div class="component-card" id="component-03">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ─── 04: Three grader types ─── -->
+      <section class="concept-section" id="s04">
+        <div class="section-header">
+          <span class="section-number">04</span>
+          <h2 class="section-title">Three grader types</h2>
+        </div>
+        <blockquote class="section-quote">
+          Code-based · Model-based · Human — each with different speed, cost, and nuance.
+        </blockquote>
+        <p class="section-body">
+          There's no single right way to grade an AI. The same trace can be evaluated three different ways,
+          each with different tradeoffs. Below is the same 5-step trace run through all three.
+          <strong>Click a column</strong> to expand its tradeoff breakdown.
+        </p>
+        <div class="component-card" id="component-04">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ─── 05: pass@k ─── -->
+      <section class="concept-section" id="s05">
+        <div class="section-header">
+          <span class="section-number">05</span>
+          <h2 class="section-title">pass@k</h2>
+        </div>
+        <blockquote class="section-quote">
+          pass@k = probability the agent succeeds in at least one of k trials.
+        </blockquote>
+        <p class="section-body">
+          Here's the trap: you run your AI agent once, it works, you ship it. But non-deterministic
+          systems can't be judged on a single run. Drag the slider and watch what happens to each
+          agent's success rate as you give it more tries.
+        </p>
+        <div class="component-card" id="component-05">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ─── 06: Capability vs Regression ─── -->
+      <section class="concept-section" id="s06">
+        <div class="section-header">
+          <span class="section-number">06</span>
+          <h2 class="section-title">Capability vs regression</h2>
+        </div>
+        <blockquote class="section-quote">
+          Capability evals target what your agent can't do yet. Once it can, they become regression evals.
+        </blockquote>
+        <p class="section-body">
+          Evals aren't static. As your agent improves, the tests that used to expose failures get
+          promoted into a regression suite — a safety net that protects against sliding backward.
+          Try it below.
+        </p>
+        <div class="component-card" id="component-06">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        Built by
+        <a href="https://nishchay.me" target="_blank" rel="noopener">Nishchay Vishwanath</a>
+        ·
+        Source:
+        <a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents" target="_blank" rel="noopener">
+          Anthropic Engineering ↗
+        </a>
+      </p>
+      <p>
+        <a href="https://github.com/nishtobehonest/2d-world-ai" target="_blank" rel="noopener">
+          github.com/nishtobehonest/2d-world-ai
+        </a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="world.js"></script>
+  <script src="components.js"></script>
+  <script>
+    (function () {
+      const btn = document.getElementById('theme-toggle');
+      const apply = function (light) {
+        document.documentElement.dataset.theme = light ? 'light' : '';
+        btn.textContent = light ? 'Dark' : 'Light';
+      };
+      apply(localStorage.getItem('nish-theme') === 'light');
+      btn.addEventListener('click', function () {
+        const goLight = document.documentElement.dataset.theme !== 'light';
+        apply(goLight);
+        localStorage.setItem('nish-theme', goLight ? 'light' : 'dark');
+      });
+    })();
+  </script>
+</body>
+</html>

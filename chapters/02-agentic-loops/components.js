@@ -83,7 +83,7 @@ function initC01() {
     /* ── Row 2: assumption badges (only in gaps mode) ── */
     if (showGaps) {
       const badgeRow = document.createElement('div');
-      badgeRow.style.cssText = 'display:flex; align-items:flex-start; margin-top:10px; overflow-x:auto;';
+      badgeRow.style.cssText = 'display:flex; align-items:flex-start; margin-top:2px; overflow-x:auto;';
 
       nodes.forEach((node, i) => {
         /* Spacer under each node */
@@ -96,7 +96,7 @@ function initC01() {
           badgeWrap.style.cssText = `flex:0 0 ${CONN_W}px; display:flex; flex-direction:column; align-items:center; gap:4px;`;
           const badge = assumptions[i];
           badgeWrap.innerHTML = `
-            <div style="width:1px; height:8px; background:var(--border);"></div>
+            <div style="width:1px; height:4px; background:var(--border);"></div>
             <div class="assumption-badge ${badge.cls}" style="opacity:0; transform:translateY(4px); transition:opacity 0.2s ease ${i * 0.07}s, transform 0.2s ease ${i * 0.07}s; white-space:nowrap;">
               ${badge.text.replace('\n', '<br>')}
             </div>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback Loops — Primer</title>
+  <meta name="description" content="Your agent retried and failed again. Without a feedback loop, retrying is just hoping. Five interactive concepts on how agentic systems actually iterate." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <button class="theme-toggle" id="theme-toggle">Light</button>
+
+  <!-- ═══════════════════════════════════════════════
+       HEADER
+  ════════════════════════════════════════════════ -->
+  <header class="site-header">
+    <div class="container">
+      <a href="../../" class="back-link">← Primer</a>
+      <h1 class="site-title">Feedback Loops</h1>
+      <p class="site-attribution">
+        Chapter 02 · How to avoid AI slop?
+      </p>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════
+       INTRO
+  ════════════════════════════════════════════════ -->
+  <section class="intro-section">
+    <div class="container">
+      <p class="intro-text">
+        A single AI call is a ballistic missile — it launches, and you hope it lands.
+        Most "agentic" systems are just pipelines of single calls dressed up with a for-loop.
+        That's not iteration. Iteration requires a feedback loop: a mechanism that tells
+        the system what changed, and why.
+      </p>
+      <p class="intro-sub">
+        Five concepts. Five live components. Scroll through.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════════════════ -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- ─── 01: The one-shot trap ─── -->
+      <section class="concept-section" id="s01">
+        <div class="section-header">
+          <span class="section-number">01</span>
+          <h2 class="section-title">The one-shot trap</h2>
+        </div>
+        <blockquote class="section-quote">
+          "Every assumption an agent makes without verification becomes a compounding error."
+        </blockquote>
+        <p class="section-body">
+          A linear pipeline looks clean on a diagram: input goes in, output comes out.
+          But every node in that pipeline makes assumptions about the previous node's output —
+          and never checks them. Toggle between the two views below to see what's actually
+          happening between the boxes.
+        </p>
+        <div class="component-card" id="component-01">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ─── 02: What a feedback loop is ─── -->
+      <section class="concept-section" id="s02">
+        <div class="section-header">
+          <span class="section-number">02</span>
+          <h2 class="section-title">What a feedback loop actually is</h2>
+        </div>
+        <blockquote class="section-quote">
+          The signal matters more than the loop.
+        </blockquote>
+        <p class="section-body">
+          People conflate three fundamentally different mechanisms under "feedback loop":
+          retrying on error, human review, and evaluator-as-judge. Most systems implement
+          the first and claim they're doing the third. <strong>Click each tab</strong> to see
+          what's actually different between them — trigger, signal, and what changes.
+        </p>
+        <div class="component-card" id="component-02">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ─── 03: The iteration cycle ─── -->
+      <section class="concept-section" id="s03">
+        <div class="section-header">
+          <span class="section-number">03</span>
+          <h2 class="section-title">The iteration cycle</h2>
+        </div>
+        <blockquote class="section-quote">
+          Generate · Evaluate · Delta · Steer — and the one node everyone skips.
+        </blockquote>
+        <p class="section-body">
+          A real feedback loop has four phases. Most implementations collapse two of them —
+          they skip straight from Evaluate to Generate again, bypassing Delta entirely.
+          Delta is the load-bearing node: it answers "what specifically changed, and why?"
+          Without it, you're not iterating. You're sampling. <strong>Step through below</strong>
+          to watch the context window build across passes.
+        </p>
+        <div class="component-card" id="component-03">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ─── 04: The stopping problem ─── -->
+      <section class="concept-section" id="s04">
+        <div class="section-header">
+          <span class="section-number">04</span>
+          <h2 class="section-title">The stopping problem</h2>
+        </div>
+        <blockquote class="section-quote">
+          An agent that doesn't know when to stop isn't autonomous — it's runaway.
+        </blockquote>
+        <p class="section-body">
+          Loops without convergence criteria are infinite regress. Most people solve this
+          badly: stop after N iterations (arbitrary) or stop when it looks good enough
+          (circular). The right approach is to define what "good enough" means before
+          the loop starts — in measurable terms. <strong>Drag the quality bar</strong>
+          to feel the cost/quality tradeoff directly.
+        </p>
+        <div class="component-card" id="component-04">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <!-- ─── 05: Zoom out ─── -->
+      <section class="concept-section" id="s05">
+        <div class="section-header">
+          <span class="section-number">05</span>
+          <h2 class="section-title">Zoom out</h2>
+        </div>
+        <blockquote class="section-quote">
+          Parallelism is spatial. Iteration is temporal. You need both.
+        </blockquote>
+        <p class="section-body">
+          The previous chapter covered parallel sub-agents: running multiple agents
+          simultaneously to get diverse outputs cheaply, with the main thread staying clean.
+          That's not separate from feedback loops — it's nested inside one phase of them.
+          Parallel sub-agents are what happens <em>inside</em> Generate. The feedback loop
+          governs what happens <em>across</em> iterations. <strong>Click to zoom in</strong>
+          and see where they connect.
+        </p>
+        <div class="component-card" id="component-05">
+          <!-- injected by components.js -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        Built by
+        <a href="https://nishchay.me" target="_blank" rel="noopener">Nishchay Vishwanath</a>
+        ·
+        <a href="../../">← All chapters</a>
+      </p>
+      <p>
+        <a href="https://github.com/nishtobehonest/primer" target="_blank" rel="noopener">
+          github.com/nishtobehonest/primer ↗
+        </a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="components.js"></script>
+  <script>
+    (function () {
+      const btn = document.getElementById('theme-toggle');
+      const apply = function (light) {
+        document.documentElement.dataset.theme = light ? 'light' : '';
+        btn.textContent = light ? 'Dark' : 'Light';
+      };
+      apply(localStorage.getItem('nish-theme') === 'light');
+      btn.addEventListener('click', function () {
+        const goLight = document.documentElement.dataset.theme !== 'light';
+        apply(goLight);
+        localStorage.setItem('nish-theme', goLight ? 'light' : 'dark');
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -51,35 +51,66 @@ function initC01() {
     gaps: 'Each connector is an unverified assumption. They compound — a wrong intent means wrong retrieval means wrong generation. The pipeline never knew.',
   };
 
+  /* Column widths — must match between pipeline row and badge row */
+  const NODE_W = 88;
+  const CONN_W = 48;
+
   function render(showGaps) {
     diagramEl.innerHTML = '';
-    diagramEl.classList.toggle('gaps-visible', showGaps);
+
+    /* ── Row 1: pipeline nodes + arrows ── */
+    const pipeRow = document.createElement('div');
+    pipeRow.style.cssText = 'display:flex; align-items:center; overflow-x:auto; padding-bottom:2px;';
 
     nodes.forEach((node, i) => {
       const nodeEl = document.createElement('div');
-      nodeEl.className = 'pipe-node';
+      nodeEl.style.cssText = `flex:0 0 ${NODE_W}px; text-align:center; padding:10px 6px; border:1px solid var(--border); border-radius:6px; background:var(--surface);`;
       nodeEl.innerHTML = `
-        <div class="pipe-node-box">
-          <div style="font-weight:500; color:var(--text)">${node.label}</div>
-          <div style="font-size:10px; color:var(--muted); margin-top:3px">${node.sub}</div>
-        </div>
-        ${showGaps ? '<div class="pipe-gap-label" style="opacity:1">↑ unverified</div>' : ''}
+        <div style="font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--text)">${node.label}</div>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:3px">${node.sub}</div>
       `;
-      diagramEl.appendChild(nodeEl);
+      pipeRow.appendChild(nodeEl);
 
       if (i < nodes.length - 1) {
-        const connEl = document.createElement('div');
-        connEl.className = 'pipe-connector';
-        const badge = assumptions[i];
-        connEl.innerHTML = `
-          <span class="pipe-arrow">→</span>
-          <span class="assumption-badge ${badge.cls} ${showGaps ? 'visible' : ''}" style="transition-delay:${i * 0.06}s">
-            ${badge.text.replace('\n', '<br>')}
-          </span>
-        `;
-        diagramEl.appendChild(connEl);
+        const arrEl = document.createElement('div');
+        arrEl.style.cssText = `flex:0 0 ${CONN_W}px; text-align:center; font-size:16px; color:var(--muted);`;
+        arrEl.textContent = '→';
+        pipeRow.appendChild(arrEl);
       }
     });
+    diagramEl.appendChild(pipeRow);
+
+    /* ── Row 2: assumption badges (only in gaps mode) ── */
+    if (showGaps) {
+      const badgeRow = document.createElement('div');
+      badgeRow.style.cssText = 'display:flex; align-items:flex-start; margin-top:10px; overflow-x:auto;';
+
+      nodes.forEach((node, i) => {
+        /* Spacer under each node */
+        const spacer = document.createElement('div');
+        spacer.style.cssText = `flex:0 0 ${NODE_W}px;`;
+        badgeRow.appendChild(spacer);
+
+        if (i < nodes.length - 1) {
+          const badgeWrap = document.createElement('div');
+          badgeWrap.style.cssText = `flex:0 0 ${CONN_W}px; display:flex; flex-direction:column; align-items:center; gap:4px;`;
+          const badge = assumptions[i];
+          badgeWrap.innerHTML = `
+            <div style="width:1px; height:8px; background:var(--border);"></div>
+            <div class="assumption-badge ${badge.cls}" style="opacity:0; transform:translateY(4px); transition:opacity 0.2s ease ${i * 0.07}s, transform 0.2s ease ${i * 0.07}s; white-space:nowrap;">
+              ${badge.text.replace('\n', '<br>')}
+            </div>
+          `;
+          badgeRow.appendChild(badgeWrap);
+          /* Trigger animation next frame */
+          requestAnimationFrame(() => {
+            const b = badgeWrap.querySelector('.assumption-badge');
+            if (b) { b.style.opacity = '1'; b.style.transform = 'translateY(0)'; }
+          });
+        }
+      });
+      diagramEl.appendChild(badgeRow);
+    }
 
     captionEl.style.opacity = '0';
     setTimeout(() => {

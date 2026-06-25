@@ -194,7 +194,7 @@
         document.documentElement.dataset.theme = light ? 'light' : '';
         btn.textContent = light ? 'Dark' : 'Light';
       };
-      apply(localStorage.getItem('nish-theme') === 'light');
+      apply(localStorage.getItem('nish-theme') !== 'dark');
       btn.addEventListener('click', function () {
         const goLight = document.documentElement.dataset.theme !== 'light';
         apply(goLight);

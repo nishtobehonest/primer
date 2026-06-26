@@ -16,12 +16,18 @@
 
   <button class="theme-toggle" id="theme-toggle">Light</button>
 
+  <nav class="top-nav">
+    <div class="container top-nav-inner">
+      <a href="../../">← Primer</a>
+      <a href="https://nishchay.me" target="_blank" rel="noopener">nishchay.me ↗</a>
+    </div>
+  </nav>
+
   <!-- ═══════════════════════════════════════════════
        HEADER
   ════════════════════════════════════════════════ -->
   <header class="site-header">
     <div class="container">
-      <a href="../../" class="back-link">← Primer</a>
       <h1 class="site-title">Feedback Loops</h1>
       <p class="site-attribution">
         Based on
@@ -159,12 +165,11 @@
           Parallelism is spatial. Iteration is temporal. You need both.
         </blockquote>
         <p class="section-body">
-          The previous chapter covered parallel sub-agents: running multiple agents
-          simultaneously to get diverse outputs cheaply, with the main thread staying clean.
-          That's not separate from feedback loops — it's nested inside one phase of them.
-          Parallel sub-agents are what happens <em>inside</em> Generate. The feedback loop
-          governs what happens <em>across</em> iterations. <strong>Click to zoom in</strong>
-          and see where they connect.
+          Most teams treat parallelism and iteration as separate design decisions. They aren't.
+          Parallel sub-agents — running multiple agents simultaneously to get diverse outputs —
+          are what happens <em>inside</em> Generate. The feedback loop governs what happens
+          <em>across</em> iterations. Spatial versus temporal.
+          <strong>Click to zoom in</strong> and see where they connect.
         </p>
         <div class="component-card" id="component-05">
           <!-- injected by components.js -->

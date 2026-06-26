@@ -59,8 +59,9 @@ Both dark (default) and light themes supported via `[data-theme="light"]` on `<h
 |---|---|---|---|
 | 01 | AI Evals | Live | /chapters/01-evals/ |
 | 02 | Feedback Loops | Live | /chapters/02-agentic-loops/ |
-| 03 | RAG | Planned | — |
-| 04 | Fine-tuning | Planned | — |
+| 03 | Agentic System Design | Live | /chapters/03-agentic-systems/ |
+| 04 | RAG | Planned | — |
+| 05 | Fine-tuning | Planned | — |
 
 Chapter card copy pattern (index.html):
 - Each chapter description should answer a specific failure mode from the "How to avoid AI slop?" theme

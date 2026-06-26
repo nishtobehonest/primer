@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic System Design — Primer by Nishchay Vishwanath</title>
+  <meta name="description" content="Why your multi-agent systems fail silently — and how to design around it. Six concepts, six live demos.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <button class="theme-toggle" id="theme-toggle">Light</button>
+
+  <nav class="top-nav">
+    <div class="container top-nav-inner">
+      <a href="../../">← Primer</a>
+      <a href="https://nishchay.me" target="_blank" rel="noopener">nishchay.me ↗</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <div class="container">
+      <header class="page-header">
+        <div class="chapter-badge">CHAPTER 03</div>
+        <h1 class="page-title">Agentic System Design</h1>
+        <p class="page-subtitle">
+          Based on
+          <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">Anthropic Engineering</a>
+          and
+          <a href="https://engineering.fractional.ai" target="_blank" rel="noopener">Fractional AI Engineering</a>
+        </p>
+      </header>
+
+      <section class="intro-section">
+        <p class="intro-body">
+          Multi-agent systems introduce a failure mode single agents don't have:
+          <strong>silent failure.</strong> A worker returns plausible-looking wrong data.
+          The orchestrator synthesizes it as fact. No error. No log. A confident wrong answer
+          reaches your user — and you have no way to know.
+        </p>
+        <p class="intro-body">
+          This chapter covers the six design decisions that separate a system that fails
+          loudly — recoverable — from one that fails silently. Case study:
+          <a href="https://www.fractional.ai/case-studies" target="_blank" rel="noopener">Fractional AI × Cando Rail</a> —
+          20+ hours per safety assessment to an instant draft for $0.05.
+        </p>
+      </section>
+    </div>
+
+    <!-- ─── 01 THE SILENT FAILURE ──────────────────────────────── -->
+    <section class="concept-section" id="concept-01">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">01</span>
+          <h2 class="section-title">THE SILENT FAILURE</h2>
+        </div>
+        <p class="section-quote">"The last mile often becomes most of the journey — moving from prototype to production requires robust error handling, full production tracing for non-deterministic debugging, and careful state management." — Anthropic Engineering</p>
+        <p class="section-body">
+          When a worker fails in a multi-agent system, it rarely looks like a failure from the outside. It returns a structurally correct response — right format, plausible values — and the orchestrator synthesizes it with the other workers. No error. No log entry. A confident wrong answer reaches your user.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">0 errors</div>
+            <div class="stat-chip-label">what the orchestrator logs</div>
+          </div>
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">wrong answer</div>
+            <div class="stat-chip-label">what the user receives</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-chip-value">silent</div>
+            <div class="stat-chip-label">default failure mode</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-01"></div>
+      </div>
+    </section>
+
+    <!-- ─── 02 ORCHESTRATOR-WORKER PATTERN ────────────────────── -->
+    <section class="concept-section" id="concept-02">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">02</span>
+          <h2 class="section-title">ORCHESTRATOR-WORKER PATTERN</h2>
+        </div>
+        <p class="section-quote">"We embedded scaling rules in prompts to guide effort budgeting, and developed detailed task descriptions with clear boundaries and output formats to prevent duplication." — Anthropic Engineering</p>
+        <p class="section-body">
+          The pattern works when task boundaries are explicit and non-overlapping — each worker owns one domain, the orchestrator merges distinct outputs. Boundary blur is the failure mode: two workers in the same domain return conflicting outputs, and the orchestrator must reconcile a contradiction it was never designed to handle.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip good">
+            <div class="stat-chip-value">1 domain</div>
+            <div class="stat-chip-label">per worker → merge trivial</div>
+          </div>
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">2 outputs</div>
+            <div class="stat-chip-label">same domain → contradiction</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-chip-value">explicit</div>
+            <div class="stat-chip-label">Anthropic's fix: task descriptions</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-02"></div>
+      </div>
+    </section>
+
+    <!-- ─── 03 CONTEXT BLOAT ───────────────────────────────────── -->
+    <section class="concept-section" id="concept-03">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">03</span>
+          <h2 class="section-title">CONTEXT BLOAT</h2>
+        </div>
+        <p class="section-quote">"Figuring out what parts of our system could be pared down was not obvious from looking at the logs." — Fractional AI Engineering</p>
+        <p class="section-body">
+          Every tool call adds tokens. Quality degrades non-linearly as context fills — not as an error, as slightly worse answers you can't see. Fractional AI only discovered their main cost driver after building a profiler: <code>get_all_fields</code> was consuming most of the context because it returned a full data dump when the agent needed specific fields.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">$0.71/run</div>
+            <div class="stat-chip-label">Fractional AI agent cost</div>
+          </div>
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">get_all_fields</div>
+            <div class="stat-chip-label">majority of context consumed</div>
+          </div>
+          <div class="stat-chip good">
+            <div class="stat-chip-value">−90%</div>
+            <div class="stat-chip-label">tokens with pre-indexing (Airbyte)</div>
+          </div>
+          <div class="stat-chip good">
+            <div class="stat-chip-value">−40%</div>
+            <div class="stat-chip-label">tool calls with pre-indexing</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-03"></div>
+      </div>
+    </section>
+
+    <!-- ─── 04 SEQUENTIAL VS. PARALLEL ────────────────────────── -->
+    <section class="concept-section" id="concept-04">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">04</span>
+          <h2 class="section-title">SEQUENTIAL VS. PARALLEL</h2>
+        </div>
+        <p class="section-quote">"Parallel tool calling — running 3+ tools simultaneously — reduced complex research query time by up to 90%." — Anthropic Engineering</p>
+        <p class="section-body">
+          Sequential chains tasks: one failure aborts the run. Parallel runs independent tasks simultaneously — failures are contained, and latency collapses to the slowest single task. Anthropic's production research system reported 90% reduction in complex query time from this switch alone.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">90%</div>
+            <div class="stat-chip-label">time reduction (parallel)</div>
+          </div>
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">1 fail → all stop</div>
+            <div class="stat-chip-label">sequential failure</div>
+          </div>
+          <div class="stat-chip good">
+            <div class="stat-chip-value">1 fail → others continue</div>
+            <div class="stat-chip-label">parallel failure</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-04"></div>
+      </div>
+    </section>
+
+    <!-- ─── 05 MINIMAL FOOTPRINT ──────────────────────────────── -->
+    <section class="concept-section" id="concept-05">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">05</span>
+          <h2 class="section-title">MINIMAL FOOTPRINT</h2>
+        </div>
+        <p class="section-quote">"Prefer reversible over irreversible actions. Request only necessary permissions. Err on the side of doing less and confirming with users when uncertain about intended scope." — Anthropic Engineering</p>
+        <p class="section-body">
+          Without explicit constraints, an agent executes a DELETE the same way it executes a READ — immediately, no pause. Three rules: prefer reversible actions, request only the access needed for this step, and pause for human confirmation before anything that can't be undone. Fractional AI's Peter the Safety Agent never finalizes an assessment without expert approval — that one design decision made it deployable in a regulated rail industry context.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">irreversible</div>
+            <div class="stat-chip-label">requires human gate</div>
+          </div>
+          <div class="stat-chip good">
+            <div class="stat-chip-value">reversible</div>
+            <div class="stat-chip-label">agent acts freely</div>
+          </div>
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">rail safety</div>
+            <div class="stat-chip-label">deployed in — Cando Rail</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-05"></div>
+      </div>
+    </section>
+
+    <!-- ─── 06 PROTOTYPE TO PRODUCTION ────────────────────────── -->
+    <section class="concept-section" id="concept-06">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">06</span>
+          <h2 class="section-title">PROTOTYPE TO PRODUCTION</h2>
+        </div>
+        <p class="section-quote">"We learned that prompt engineering becomes significantly more complex in multi-agent environments. Early iterations suffered from agents spawning excessive subagents and failing to coordinate effectively." — Anthropic Engineering</p>
+        <p class="section-body">
+          A prototype validates the concept on inputs you chose. Production is different: messy inputs, intermittent tool failures, context degrading silently, costs you never profiled, deploys disrupting running agents. Each stage introduces a failure class that wasn't visible at the previous one — and none of it is a model problem.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">4 stages</div>
+            <div class="stat-chip-label">prototype → production</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-chip-value">last mile</div>
+            <div class="stat-chip-label">often most of the journey</div>
+          </div>
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">not model</div>
+            <div class="stat-chip-label">it's architecture</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-06"></div>
+      </div>
+    </section>
+
+    <!-- ─── OUTCOMES ───────────────────────────────────────────── -->
+    <section class="outcomes-section" id="outcomes">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">→</span>
+          <h2 class="section-title">BUSINESS OUTCOMES</h2>
+        </div>
+        <p class="section-body">
+          Fractional AI applied these principles to build Peter the Safety Agent for Cando Rail — orchestrated prework, real-time voice transcription, human approval gate at the irreversible step. The result wasn't just faster documentation — it made a scale of operations that was previously impossible.
+        </p>
+        <div class="component-card" id="component-outcomes"></div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <div class="container footer-inner">
+        <span>Built by <a href="https://nishchay.me" target="_blank" rel="noopener">Nishchay Vishwanath</a></span>
+        <span class="footer-sources">
+          Sources:
+          <a href="https://www.anthropic.com/engineering/multi-agent-research-system" target="_blank" rel="noopener">Anthropic Engineering</a> ·
+          <a href="https://engineering.fractional.ai/i-wrote-a-profiling-tool-for-agents" target="_blank" rel="noopener">Fractional AI Profiling Tool</a> ·
+          <a href="https://www.fractional.ai/case-studies" target="_blank" rel="noopener">Fractional AI Case Studies</a>
+        </span>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="components.js"></script>
+  <script>
+    const toggle = document.getElementById('theme-toggle');
+    toggle.onclick = function() {
+      const t = document.documentElement.dataset.theme === 'light' ? '' : 'light';
+      document.documentElement.dataset.theme = t;
+      localStorage.setItem('nish-theme', t);
+      toggle.textContent = t === 'light' ? 'Dark' : 'Light';
+    };
+    if (localStorage.getItem('nish-theme') === 'light') {
+      document.documentElement.dataset.theme = 'light';
+      toggle.textContent = 'Dark';
+    }
+    initC01();
+    initC02();
+    initC03();
+    initC04();
+    initC05();
+    initC06();
+    initOutcomes();
+  </script>
+
+</body>
+</html>

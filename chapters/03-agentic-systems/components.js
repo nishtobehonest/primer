@@ -52,8 +52,12 @@ function initC01() {
           <div class="agent-name">Lead Agent</div>
           <div class="agent-task">decomposes → delegates → synthesizes</div>
         </div>
-        <div style="display:flex;width:100%;justify-content:space-around;padding:0 20px;">
-          ${SCENARIO.workers.map(() => `<div style="width:2px;height:20px;background:var(--border-2);"></div>`).join('')}
+        <div style="position:relative;width:100%;height:32px;">
+          <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:14px;background:var(--border-2);"></div>
+          <div style="position:absolute;top:14px;left:16.67%;right:16.67%;height:2px;background:var(--border-2);"></div>
+          <div style="position:absolute;top:14px;left:16.67%;transform:translateX(-50%);width:2px;height:18px;background:var(--border-2);"></div>
+          <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:2px;height:18px;background:var(--border-2);"></div>
+          <div style="position:absolute;top:14px;left:83.33%;transform:translateX(-50%);width:2px;height:18px;background:var(--border-2);"></div>
         </div>
         <div class="workers-row" style="width:100%;">
           ${SCENARIO.workers.map((w, i) => {
@@ -91,17 +95,26 @@ function initC01() {
         </div>
         <div style="display:flex;gap:6px;${!failureOn ? 'opacity:.35;pointer-events:none;' : ''}">
           <button class="toggle-btn ${!showInternal ? 'active' : ''}" id="c01-ext">External view</button>
-          <button class="toggle-btn ${showInternal ? 'active' : ''}" id="c01-int">Internal view</button>
+          <button class="toggle-btn ${showInternal ? 'active' : ''}" id="c01-int"
+            style="${failureOn && !showInternal ? 'border-color:var(--amber);color:var(--amber);font-weight:600;' : ''}">
+            ${failureOn && !showInternal ? 'Internal view →' : 'Internal view'}
+          </button>
         </div>
       </div>
 
+      ${failureOn && !showInternal ? `
+      <div style="margin-top:12px;padding:10px 14px;background:var(--amber-dim);border:1px solid rgba(245,158,11,.3);border-radius:var(--radius-el);display:flex;align-items:flex-start;gap:10px;">
+        <span style="font-size:15px;flex-shrink:0;margin-top:1px;">⚠</span>
+        <div>
+          <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">FAILURE ACTIVE — HIDDEN FROM ORCHESTRATOR</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.5;">Worker B returned wrong data but it looked valid. The orchestrator output above is incorrect — and has no idea. Switch to <strong>Internal view →</strong> to see what actually happened.</div>
+        </div>
+      </div>` : `
       <p style="font-size:11px;color:var(--muted);margin-top:10px;font-family:var(--font-mono);">
         ${!failureOn
           ? 'All three workers returned success. The orchestrator synthesized their outputs and delivered a result.'
-          : !showInternal
-            ? 'Worker B failed internally. Switch to internal view to see what happened — and notice the orchestrator output didn\'t change.'
-            : 'Internal view: Worker B returned Q2 extrapolations as if they were Q3 actuals. The orchestrator synthesized them as fact.'}
-      </p>
+          : 'Internal view: Worker B returned Q2 extrapolations as if they were Q3 actuals. The orchestrator synthesized them as fact.'}
+      </p>`}
 
       <div class="key-insight ${failureOn && showInternal ? 'visible' : ''}">
         <div class="key-insight-label">Key insight</div>
@@ -180,8 +193,12 @@ function initC02() {
           <div class="agent-label">Orchestrator</div>
           <div class="agent-name">Safety Assessment Lead</div>
         </div>
-        <div style="display:flex;width:100%;justify-content:space-around;padding:0 20px;">
-          ${cfg.workers.map(() => `<div style="width:2px;height:20px;background:var(--border-2);"></div>`).join('')}
+        <div style="position:relative;width:100%;height:32px;">
+          <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:14px;background:var(--border-2);"></div>
+          <div style="position:absolute;top:14px;left:16.67%;right:16.67%;height:2px;background:var(--border-2);"></div>
+          <div style="position:absolute;top:14px;left:16.67%;transform:translateX(-50%);width:2px;height:18px;background:var(--border-2);"></div>
+          <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:2px;height:18px;background:var(--border-2);"></div>
+          <div style="position:absolute;top:14px;left:83.33%;transform:translateX(-50%);width:2px;height:18px;background:var(--border-2);"></div>
         </div>
         <div class="workers-row" style="width:100%;">
           ${cfg.workers.map(w => `

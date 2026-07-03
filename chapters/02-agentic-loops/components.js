@@ -389,7 +389,7 @@ function initC03() {
       el.setAttribute('stroke', 'var(--border)');
       el.setAttribute('stroke-width', '1.5');
     });
-    card.querySelectorAll('.cycle-node-label').forEach(l => l.setAttribute('fill', 'var(--muted)'));
+    card.querySelectorAll('.cycle-node-label').forEach(l => { l.style.fill = ''; });
     card.querySelectorAll('.cycle-node-sublabel').forEach(l => { l.style.opacity = '0'; });
   }
 
@@ -403,11 +403,11 @@ function initC03() {
     /* label color */
     const labelEl = card.querySelector(`#node-${name}`).nextElementSibling;
     if (labelEl && labelEl.classList.contains('cycle-node-label')) {
-      labelEl.setAttribute('fill', color);
+      labelEl.style.fill = color;
     }
     /* sub-label */
     const subEl = card.querySelector(`#sub-${name}`);
-    if (subEl) { subEl.style.opacity = '1'; subEl.setAttribute('fill', color); }
+    if (subEl) { subEl.style.opacity = '1'; subEl.style.fill = color; }
   }
 
   function colorToRgb(name) {

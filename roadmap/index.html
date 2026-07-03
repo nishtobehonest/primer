@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Learning Roadmap · Primer</title>
+  <meta name="description" content="A personal tracker for going deep on AI agents: a learning wedge, a Claude Code feature adoption checklist, and an LLM-production curriculum. Checkboxes persist across visits." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <button class="theme-toggle" id="theme-toggle">Light</button>
+
+  <nav class="top-nav">
+    <div class="container top-nav-inner">
+      <a href="../">← Primer</a>
+      <a href="https://nishchay.me" target="_blank" rel="noopener">nishchay.me ↗</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════
+       HEADER
+  ════════════════════════════════════════════════ -->
+  <header class="site-header">
+    <div class="container">
+      <h1 class="site-title">Agent Learning Roadmap</h1>
+      <p class="site-attribution">
+        A personal tracker, not a chapter. Three phases, worked in order: wedge, tool adoption, curriculum.
+      </p>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════
+       WHY THIS PAGE EXISTS
+  ════════════════════════════════════════════════ -->
+  <section class="why-section">
+    <div class="container">
+      <h2 class="roadmap-h2">Why this page exists</h2>
+      <div class="why-body">
+        <p>Plenty of people have already taught this better than I could, and most of it's free. This is just the specific path I'm taking through it, starting with tool-use reliability specifically, since it's the most concrete failure mode to go find in the wild, ahead of things like agent evals or multi-agent coordination that only make sense once that's solid. Tracked here so I actually follow it instead of leaving it in twenty open tabs. If you're following along too, this is the actual order I'd suggest, not just a byproduct of me tracking my own progress.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       THE JOURNEY (overview / how to use this)
+  ════════════════════════════════════════════════ -->
+  <section class="journey-section">
+    <div class="container">
+      <h2 class="roadmap-h2">The journey</h2>
+      <p class="roadmap-intro">
+        Three phases, worked in order. Phase 1 is the wedge itself, the thing I'm actually practicing. Phase 2 is the tool I'm using to practice it, leveled up as I go. Phase 3 is the knowledge a PM background doesn't hand you for free, picked up alongside the other two rather than front-loaded. None of the three need to be "finished" before the next one starts. They run in parallel, just in this order of priority when something has to give.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       PROGRESS DASHBOARD
+  ════════════════════════════════════════════════ -->
+  <section class="dash-section">
+    <div class="container">
+      <div class="stat-row">
+        <div class="stat-item stat-item-overall">
+          <div class="stat-value" id="stat-overall">0/0</div>
+          <div class="stat-label">Overall journey</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-wedge">0/0</div>
+          <div class="stat-label">Phase 1: Wedge</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-features">0/0</div>
+          <div class="stat-label">Phase 2: Claude Code</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-curriculum">0/0</div>
+          <div class="stat-label">Phase 3: Curriculum</div>
+        </div>
+      </div>
+      <div class="subnav">
+        <a href="#wedge">1. Wedge</a>
+        <a href="#features">2. Claude Code</a>
+        <a href="#curriculum">3. Curriculum</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════════════════ -->
+  <main class="main-content">
+
+    <!-- ─── Section A: Pick a wedge ─── -->
+    <section class="roadmap-section" id="wedge">
+      <div class="container">
+        <h2 class="roadmap-h2">Phase 1: The wedge, in practice</h2>
+        <p class="roadmap-intro">
+          I picked tool-use reliability as my wedge because it's the most concrete failure mode there is. An agent either calls the right tool with the right arguments, or it doesn't. No vibes, no "it seems smart," just a pass or a fail I can actually go find. These four stages are how I'm working through it for real, not just reading about it: build something small enough to break, learn exactly how it breaks, write it down before I forget why it mattered, then go check my thinking against people who've shipped this stuff for real. Each stage leans on the one before it.
+        </p>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="wedge-progress-fill"></div>
+        </div>
+        <div class="progress-bar-label" id="wedge-progress-label">0 / 0 done</div>
+        <div id="wedge-list"><!-- injected by app.js --></div>
+      </div>
+    </section>
+
+    <!-- ─── Section B: Claude Code feature adoption tracker ─── -->
+    <section class="roadmap-section" id="features">
+      <div class="container">
+        <h2 class="roadmap-h2">Phase 2: Claude Code feature adoption</h2>
+        <p class="roadmap-intro">
+          The tool I'm using to execute Phase 1. Every feature, ranked by how soon it should land in your workflow.
+        </p>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="feat-progress-fill"></div>
+        </div>
+        <div class="progress-bar-label" id="feat-progress-label">0 / 0 adopted</div>
+        <div class="filter-bar" id="feat-filter-bar">
+          <button class="toggle-btn active" data-filter="all" type="button">All</button>
+          <button class="toggle-btn" data-filter="now" type="button">Now</button>
+          <button class="toggle-btn" data-filter="soon" type="button">Soon</button>
+          <button class="toggle-btn" data-filter="lower" type="button">Lower</button>
+          <button class="toggle-btn" data-filter="other" type="button">Other</button>
+          <button class="toggle-btn" data-filter="expert" type="button">Expert</button>
+        </div>
+        <div id="feat-resource-links"><!-- injected by app.js --></div>
+        <div class="feat-list" id="feat-list"><!-- injected by app.js --></div>
+      </div>
+    </section>
+
+    <!-- ─── Section C: LLM production knowledge ─── -->
+    <section class="roadmap-section" id="curriculum">
+      <div class="container">
+        <h2 class="roadmap-h2">Phase 3: LLM production knowledge</h2>
+        <p class="roadmap-intro">
+          The knowledge gap alongside Phases 1 and 2, not before them. A self-study curriculum, tiered by how foundational each topic is.
+        </p>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="curriculum-progress-fill"></div>
+        </div>
+        <div class="progress-bar-label" id="curriculum-progress-label">0 / 0 done</div>
+        <div id="curriculum-list"><!-- injected by app.js --></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        <a href="../">← Primer</a>
+        ·
+        <a href="https://nishchay.me" target="_blank" rel="noopener">nishchay.me ↗</a>
+      </p>
+      <p>
+        <button class="btn btn-ghost" id="reset-btn" type="button">Reset all progress</button>
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      const btn = document.getElementById('theme-toggle');
+      const apply = function (light) {
+        document.documentElement.dataset.theme = light ? 'light' : '';
+        btn.textContent = light ? 'Dark' : 'Light';
+      };
+      apply(localStorage.getItem('nish-theme') !== 'dark');
+      btn.addEventListener('click', function () {
+        const goLight = document.documentElement.dataset.theme !== 'light';
+        apply(goLight);
+        localStorage.setItem('nish-theme', goLight ? 'light' : 'dark');
+      });
+    })();
+  </script>
+</body>
+</html>

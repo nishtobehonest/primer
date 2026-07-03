@@ -16,9 +16,11 @@ Interactive AI explainer library — learn by doing, not by reading. Each chapte
 2d-world-ai/
 ├── index.html                # Primer index — lab.nishchay.me root, chapter list
 ├── context/                  # Source reading notes
-│   ├── anthropic-evals.md    # Anthropic engineering blog — primary source for Ch01
-│   ├── hamel-evals.md        # Hamel Husain substack notes
-│   └── handbook-evals.md     # AI Evals for Everyone handbook notes
+│   ├── anthropic-evals.md              # Anthropic engineering blog — primary source for Ch01
+│   ├── hamel-evals.md                  # Hamel Husain substack notes
+│   ├── handbook-evals.md               # AI Evals for Everyone handbook notes
+│   ├── 03-agentic-systems-anthropic.md # Anthropic multi-agent systems posts — primary source for Ch03
+│   └── 03-agentic-systems-fractional-ai.md # Fractional AI Engineering blog — context bloat + footprint
 │
 └── chapters/
     ├── 01-evals/             # Chapter 01: AI Evals (live)
@@ -27,10 +29,15 @@ Interactive AI explainer library — learn by doing, not by reading. Each chapte
     │   ├── style.css         # Styles (nishtobehonest design tokens)
     │   ├── world.js          # Grid rendering + agent simulation
     │   └── components.js     # The 6 interactive components
-    └── 02-agentic-loops/     # Chapter 02: Feedback Loops (live)
-        ├── index.html        # The page — lab.nishchay.me/chapters/02-agentic-loops/
+    ├── 02-agentic-loops/     # Chapter 02: Feedback Loops (live)
+    │   ├── index.html        # The page — lab.nishchay.me/chapters/02-agentic-loops/
+    │   ├── style.css         # Styles (nishtobehonest design tokens)
+    │   └── components.js     # The 5 interactive components
+    └── 03-agentic-systems/   # Chapter 03: Agentic System Design (live)
+        ├── SPEC.md           # Full build spec
+        ├── index.html        # The page — lab.nishchay.me/chapters/03-agentic-systems/
         ├── style.css         # Styles (nishtobehonest design tokens)
-        └── components.js     # The 5 interactive components
+        └── components.js     # The 6 interactive components
 ```
 
 ## Stack
@@ -144,3 +151,28 @@ Sources: [Anthropic — Building Effective Agents](https://www.anthropic.com/new
 | 03 | The iteration cycle | Step through Generate → Evaluate → Delta → Steer; watch context window build across passes |
 | 04 | The stopping problem | Drag a quality threshold bar; feel the cost/quality tradeoff as iterations change |
 | 05 | Zoom out | Click to zoom in on where parallelism (spatial) and iteration (temporal) connect |
+
+## Personal pages (outside the chapter series)
+
+These aren't part of the "How to avoid AI slop?" editorial chapters — linked from
+root `index.html` under "Also here", not in the chapter grid. No number, no
+Live/Soon badge.
+
+| Page | Purpose | URL |
+|---|---|---|
+| Agent Learning Roadmap | Personal tracker: wedge learning strategy, Claude Code feature adoption checklist, LLM-production curriculum — checkboxes persist via `localStorage` (`nv-roadmap-v1`) | `/roadmap/` |
+
+## Chapter 03: Agentic System Design
+
+Sources: `context/03-agentic-systems-anthropic.md` · `context/03-agentic-systems-fractional-ai.md`
+
+6 interactive components, each teaching one agentic system design concept:
+
+| # | Concept | What the component does |
+|---|---|---|
+| 01 | The silent failure | Orchestrator + 3 workers; "Introduce failure" makes Worker B silently fail — toggle internal/external view |
+| 02 | Orchestrator-worker pattern | Toggle "Clear task boundaries" vs "Overlapping tasks" — see duplicate work and conflicts emerge |
+| 03 | Context bloat | Agent accumulates tool calls; token bar fills; quality degrades; "Profile" reveals which calls consume the most tokens |
+| 04 | Sequential vs. parallel | 4 tasks, toggle sequential/parallel; introduce failure to see chain break vs. parallel completion |
+| 05 | Minimal footprint | 3 action types (reversible/semi/irreversible); toggle minimal footprint mode — agent pauses before irreversible actions |
+| 06 | Prototype to production | 4-stage rail: Prototype → Staging → Pre-Production → Production; click each stage to expand failure modes and design decisions |

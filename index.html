@@ -258,6 +258,46 @@
       transform: translateX(2px);
     }
 
+    /* ── Extras ── */
+    .extras-section {
+      padding: 0 0 64px;
+    }
+
+    .extra-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 24px;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .extra-link:hover {
+      border-color: var(--border-2);
+      background: var(--surface-2);
+    }
+    .extra-link-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .extra-link-desc {
+      font-size: 13px;
+      color: var(--muted-2);
+      line-height: 1.5;
+    }
+    .extra-arrow {
+      font-size: 18px;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+    .extra-link:hover .extra-arrow { color: var(--blue); transform: translateX(2px); }
+
     /* ── Footer ── */
     .site-footer {
       border-top: 1px solid var(--border);
@@ -386,6 +426,22 @@
       </div>
     </div>
   </main>
+
+  <!-- ── Personal / extras ── -->
+  <section class="extras-section">
+    <div class="container">
+      <div class="section-label">Also here</div>
+      <a class="extra-link" href="roadmap/">
+        <div class="extra-link-body">
+          <div class="extra-link-title">Agent Learning Roadmap</div>
+          <div class="extra-link-desc">
+            A personal tracker — wedge strategy, Claude Code feature adoption, and an LLM-production curriculum.
+          </div>
+        </div>
+        <span class="extra-arrow">→</span>
+      </a>
+    </div>
+  </section>
 
   <!-- ── Footer ── -->
   <footer class="site-footer">

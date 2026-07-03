@@ -15,6 +15,10 @@ Interactive AI explainer library — learn by doing, not by reading. Each chapte
 ```
 2d-world-ai/
 ├── index.html                # Primer index — lab.nishchay.me root, chapter list
+├── roadmap/                  # Personal page — Agent Learning Roadmap (not a chapter)
+│   ├── index.html            # The page — lab.nishchay.me/roadmap/
+│   ├── style.css              # Styles
+│   └── app.js                 # Checklist state, localStorage (`nv-roadmap-v1`)
 ├── context/                  # Source reading notes
 │   ├── anthropic-evals.md              # Anthropic engineering blog — primary source for Ch01
 │   ├── hamel-evals.md                  # Hamel Husain substack notes

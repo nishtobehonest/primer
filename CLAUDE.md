@@ -24,7 +24,10 @@ Interactive AI explainer library — learn by doing, not by reading. Each chapte
 │   ├── hamel-evals.md                  # Hamel Husain substack notes
 │   ├── handbook-evals.md               # AI Evals for Everyone handbook notes
 │   ├── 03-agentic-systems-anthropic.md # Anthropic multi-agent systems posts — primary source for Ch03
-│   └── 03-agentic-systems-fractional-ai.md # Fractional AI Engineering blog — context bloat + footprint
+│   ├── 03-agentic-systems-fractional-ai.md # Fractional AI Engineering blog — context bloat + footprint
+│   ├── 04-harness-anthropic-effective-harnesses.md # Anthropic — initializer/coding-agent session bridging
+│   ├── 04-harness-anthropic-harness-design.md      # Anthropic — planner/generator/evaluator, cost data
+│   └── 04-harness-faros-ai.md                      # Faros AI — Agent = Model + Harness, 5 layers
 │
 └── chapters/
     ├── 01-evals/             # Chapter 01: AI Evals (live)
@@ -37,9 +40,14 @@ Interactive AI explainer library — learn by doing, not by reading. Each chapte
     │   ├── index.html        # The page — lab.nishchay.me/chapters/02-agentic-loops/
     │   ├── style.css         # Styles (nishtobehonest design tokens)
     │   └── components.js     # The 5 interactive components
-    └── 03-agentic-systems/   # Chapter 03: Agentic System Design (live)
+    ├── 03-agentic-systems/   # Chapter 03: Agentic System Design (live)
+    │   ├── SPEC.md           # Full build spec
+    │   ├── index.html        # The page — lab.nishchay.me/chapters/03-agentic-systems/
+    │   ├── style.css         # Styles (nishtobehonest design tokens)
+    │   └── components.js     # The 6 interactive components
+    └── 04-harness-engineering/  # Chapter 04: Agent Harness Engineering (live)
         ├── SPEC.md           # Full build spec
-        ├── index.html        # The page — lab.nishchay.me/chapters/03-agentic-systems/
+        ├── index.html        # The page — lab.nishchay.me/chapters/04-harness-engineering/
         ├── style.css         # Styles (nishtobehonest design tokens)
         └── components.js     # The 6 interactive components
 ```
@@ -71,15 +79,18 @@ Both dark (default) and light themes supported via `[data-theme="light"]` on `<h
 | 01 | AI Evals | Live | /chapters/01-evals/ |
 | 02 | Feedback Loops | Live | /chapters/02-agentic-loops/ |
 | 03 | Agentic System Design | Live | /chapters/03-agentic-systems/ |
-| 04 | RAG | Planned | — |
-| 05 | Fine-tuning | Planned | — |
+| 04 | Agent Harness Engineering | Live | /chapters/04-harness-engineering/ |
+| 05 | RAG | Planned | — |
+| 06 | Fine-tuning | Planned | — |
 
 Chapter card copy pattern (index.html):
 - Each chapter description should answer a specific failure mode from the "How to avoid AI slop?" theme
 - Ch01: "You can't tell if it works by looking at it. Evals are how you know."
 - Ch02: "Your agent retried and failed again. Without a feedback loop, retrying is just hoping — here's what iteration actually means."
-- Ch03: "Hallucinations are a retrieval problem. Grounding your AI in real data is how you fix it."
-- Ch04: "Generic model, generic output. Fine-tuning is how you make AI care about your specific problem."
+- Ch03: "Your multi-agent system ran to completion and returned a confident wrong answer. Silent failures are the default — here's how to design systems that fail visibly."
+- Ch04: "It looked done in 20 minutes. It didn't work. The harness around the model — not a smarter one — is what closes that gap."
+- Ch05 (planned): "Hallucinations are a retrieval problem. Grounding your AI in real data is how you fix it."
+- Ch06 (planned): "Generic model, generic output. Fine-tuning is how you make AI care about your specific problem."
 
 When adding a new chapter:
 1. Create `chapters/NN-slug/` with `index.html`, `style.css`, component JS
@@ -180,3 +191,21 @@ Sources: `context/03-agentic-systems-anthropic.md` · `context/03-agentic-system
 | 04 | Sequential vs. parallel | 4 tasks, toggle sequential/parallel; introduce failure to see chain break vs. parallel completion |
 | 05 | Minimal footprint | 3 action types (reversible/semi/irreversible); toggle minimal footprint mode — agent pauses before irreversible actions |
 | 06 | Prototype to production | 4-stage rail: Prototype → Staging → Pre-Production → Production; click each stage to expand failure modes and design decisions |
+
+## Chapter 04: Agent Harness Engineering
+
+Case study: Anthropic (Claude Code / Claude Agent SDK harness design)
+Sources: `context/04-harness-anthropic-effective-harnesses.md` · `context/04-harness-anthropic-harness-design.md` · `context/04-harness-faros-ai.md`
+
+6 interactive components, each teaching one harness engineering concept — Terminal Replay theme (annotated fake terminal, toggle a harness layer on/off, replay the same task differently):
+
+| # | Concept | What the component does |
+|---|---|---|
+| 01 | Agent = Model + Harness | Toggle solo run ($9/20min, broken input wiring) vs. full-harness run ($200/6hr, working gameplay + bonus features) — same model both times |
+| 02 | The one-shot ceiling | Context bar fills across one long session; toggle session-bridging on/off — premature "done" vs. a clean handoff to the next session |
+| 03 | The verification gate | Toggle a mandatory test-before-exit step; the same bug gets shipped or caught depending on the gate |
+| 04 | Planner → Generator → Evaluator | Click through 7 real, timestamped/priced build phases from Anthropic's DAW case; running cost total ticks up to $124.70 |
+| 05 | Sprint decomposition | Toggle continuous generation vs. sprint-gated generation; evaluator-criteria checklist fills per sprint vs. one uninterrupted run |
+| 06 | Harness artifacts in the wild | Step through an annotated (paraphrased) Claude Code session opening this exact repo — CLAUDE.md context, a memory recall, a skill invocation |
+
+All numbers (the $9/20min vs. $200/6hr comparison, the DAW round-by-round cost table, the 27-criteria Sprint 3 example) are Anthropic's own reported figures — no benchmark or accuracy metric is implied anywhere, since neither source discloses one.

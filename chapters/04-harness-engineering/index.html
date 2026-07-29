@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Harness Engineering — Primer by Nishchay Vishwanath</title>
+  <meta name="description" content="It looked done in 20 minutes. It didn't work. The harness around the model — not a smarter one — is what closes that gap. Six concepts, six live demos.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <button class="theme-toggle" id="theme-toggle">Light</button>
+
+  <nav class="top-nav">
+    <div class="container top-nav-inner">
+      <a href="../../">← Primer</a>
+      <a href="https://nishchay.me" target="_blank" rel="noopener">nishchay.me ↗</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <div class="container">
+      <header class="page-header">
+        <div class="chapter-badge">CHAPTER 04</div>
+        <h1 class="page-title">Agent Harness Engineering</h1>
+        <p class="page-subtitle">
+          Based on
+          <a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener">Anthropic Engineering</a>
+          and
+          <a href="https://www.faros.ai/blog/harness-engineering" target="_blank" rel="noopener">Faros AI</a>
+        </p>
+      </header>
+
+      <section class="intro-section">
+        <p class="intro-body">
+          You gave an agent 20 minutes and $9 and got something that looks like a working app —
+          but the input wiring is broken and half the layout is dead space.
+          <strong>Swapping in a smarter model doesn't fix that.</strong> The industry has moved
+          through prompt engineering, then context engineering — but the layer that actually
+          determines whether an agent ships working software is the harness wrapped around it:
+          the tools, verification loops, and checkpoints that turn one-shot generation into
+          something that actually works.
+        </p>
+        <p class="intro-body">
+          This chapter covers six concrete harness decisions, using Anthropic's own reported
+          numbers from building Claude Code and the Claude Agent SDK:
+          <a href="https://www.anthropic.com/engineering/harness-design-long-running-apps" target="_blank" rel="noopener">the same model, run solo vs. with a full harness, cost 20x less and shipped broken input wiring</a> —
+          or cost 20x more and shipped working gameplay plus features nobody asked for.
+        </p>
+      </section>
+    </div>
+
+    <!-- ─── 01 AGENT = MODEL + HARNESS ─────────────────────────── -->
+    <section class="concept-section" id="concept-01">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">01</span>
+          <h2 class="section-title">AGENT = MODEL + HARNESS</h2>
+        </div>
+        <p class="section-quote">"Harness engineering: the surrounding infrastructure determines reliability, not model capability alone." — Faros AI</p>
+        <p class="section-body">
+          Same model. Same task. Two different harnesses. Anthropic's own retro-game-maker build ran solo in 20 minutes for $9 — and shipped broken input wiring and dead layout space. The full-harness run took 6 hours and cost $200, over 20x more — and shipped working gameplay, plus a sprite generator and level designer nobody asked for. The model never changed.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">$9 / 20 min</div>
+            <div class="stat-chip-label">solo run</div>
+          </div>
+          <div class="stat-chip good">
+            <div class="stat-chip-value">$200 / 6 hr</div>
+            <div class="stat-chip-label">full-harness run</div>
+          </div>
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">20x</div>
+            <div class="stat-chip-label">cost multiplier, same model</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-01"></div>
+      </div>
+    </section>
+
+    <!-- ─── 02 THE ONE-SHOT CEILING ─────────────────────────────── -->
+    <section class="concept-section" id="concept-02">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">02</span>
+          <h2 class="section-title">THE ONE-SHOT CEILING</h2>
+        </div>
+        <p class="section-quote">"Each new session begins with no memory of what came before — agents need a way to bridge the gap between coding sessions." — Anthropic Engineering</p>
+        <p class="section-body">
+          A single continuous session has a hard ceiling: the context window. Without a way to bridge sessions, an agent nearing that ceiling rushes to declare "done" — leaving an untested, undocumented, possibly broken feature behind. Anthropic's fix: an initializer agent sets up a shared feature list and progress file once, then every session after it does one feature, tests it, and leaves a clean handoff for the next.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">no memory</div>
+            <div class="stat-chip-label">each new session, by default</div>
+          </div>
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">200+ features</div>
+            <div class="stat-chip-label">tracked across sessions in one build</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-02"></div>
+      </div>
+    </section>
+
+    <!-- ─── 03 THE VERIFICATION GATE ────────────────────────────── -->
+    <section class="concept-section" id="concept-03">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">03</span>
+          <h2 class="section-title">THE VERIFICATION GATE</h2>
+        </div>
+        <p class="section-quote">"Clean state" means "the kind of code that would be appropriate for merging to a main branch: there are no major bugs, the code is orderly and well-documented." — Anthropic Engineering</p>
+        <p class="section-body">
+          Without a test-before-exit gate, an agent edits a file, glances at the diff, decides it looks right, and marks the task complete — the same failure pattern whether the model is careful or careless. Anthropic's coding-agent pattern runs a browser-automation test before allowing a feature to be marked done, catching the exact bug a "looks fine" read-through misses.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">looks correct</div>
+            <div class="stat-chip-label">without a test gate</div>
+          </div>
+          <div class="stat-chip good">
+            <div class="stat-chip-value">test-verified</div>
+            <div class="stat-chip-label">with a test gate</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-03"></div>
+      </div>
+    </section>
+
+    <!-- ─── 04 PLANNER → GENERATOR → EVALUATOR ─────────────────── -->
+    <section class="concept-section" id="concept-04">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">04</span>
+          <h2 class="section-title">PLANNER → GENERATOR → EVALUATOR</h2>
+        </div>
+        <p class="section-quote">"A planner breaks the big task into smaller chunks. A generator builds each chunk. An evaluator reviews the output and sends feedback." — Anthropic Engineering</p>
+        <p class="section-body">
+          Anthropic's Digital Audio Workstation build ran this three-agent architecture end to end — every phase timed and priced. Click through the real breakdown: a planning pass, then three build/QA rounds, each round's evaluator feedback shaping the next round's build.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">7 phases</div>
+            <div class="stat-chip-label">planner + 3 build/QA rounds</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-chip-value">$124.70</div>
+            <div class="stat-chip-label">total cost, 3h 50min</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-04"></div>
+      </div>
+    </section>
+
+    <!-- ─── 05 SPRINT DECOMPOSITION ─────────────────────────────── -->
+    <section class="concept-section" id="concept-05">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">05</span>
+          <h2 class="section-title">SPRINT DECOMPOSITION</h2>
+        </div>
+        <p class="section-quote">"Sprint 3 alone had 27 criteria covering the level editor." — Anthropic Engineering</p>
+        <p class="section-body">
+          A continuous, undecomposed generation run gave Anthropic's team no checkpoint to catch quality drift until the whole run finished — one comparison ran over two hours before any evaluation happened. Breaking the same work into sprints, each gated by its own evaluator criteria, surfaces problems chunk by chunk instead of at the end. Chunking is a harness decision — the model never "decided" to checkpoint itself.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">2+ hours</div>
+            <div class="stat-chip-label">continuous run, no checkpoint</div>
+          </div>
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">27 criteria</div>
+            <div class="stat-chip-label">Sprint 3, gated before continuing</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-05"></div>
+      </div>
+    </section>
+
+    <!-- ─── 06 HARNESS ARTIFACTS IN THE WILD ───────────────────── -->
+    <section class="concept-section" id="concept-06">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">06</span>
+          <h2 class="section-title">HARNESS ARTIFACTS IN THE WILD</h2>
+        </div>
+        <p class="section-quote">"This memory is 13 days old — verify against current code before asserting as fact." — a real guardrail from this author's own Claude Code memory system</p>
+        <p class="section-body">
+          Harness engineering isn't unique to Anthropic's published case studies — it's in the repo this exact chapter was built in. A CLAUDE.md file with a PII guardrail. A memory system that flags its own staleness before you trust it. A custom skill that encodes an entire build process so it doesn't have to be re-explained every time. Step through a real (paraphrased) session opening this project.
+        </p>
+        <div class="component-card" id="component-06"></div>
+      </div>
+    </section>
+
+    <!-- ─── OUTCOMES ───────────────────────────────────────────── -->
+    <section class="outcomes-section" id="outcomes">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">→</span>
+          <h2 class="section-title">BUSINESS OUTCOMES</h2>
+        </div>
+        <p class="section-body">
+          The real cost isn't the extra $191 or 5 hours 40 minutes the full harness took over the solo run. It's what the $9, 20-minute version would have shipped uncaught — broken input wiring, dead layout space, a demo that looks done and isn't. Harness engineering trades time and compute for software that actually works.
+        </p>
+        <div class="component-card" id="component-outcomes"></div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <div class="container footer-inner">
+        <span>Built by <a href="https://nishchay.me" target="_blank" rel="noopener">Nishchay Vishwanath</a></span>
+        <span class="footer-sources">
+          Sources:
+          <a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener">Anthropic — Effective Harnesses</a> ·
+          <a href="https://www.anthropic.com/engineering/harness-design-long-running-apps" target="_blank" rel="noopener">Anthropic — Harness Design</a> ·
+          <a href="https://www.faros.ai/blog/harness-engineering" target="_blank" rel="noopener">Faros AI</a>
+        </span>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="components.js"></script>
+  <script>
+    const toggle = document.getElementById('theme-toggle');
+    toggle.onclick = function() {
+      const t = document.documentElement.dataset.theme === 'light' ? '' : 'light';
+      document.documentElement.dataset.theme = t;
+      localStorage.setItem('nish-theme', t);
+      toggle.textContent = t === 'light' ? 'Dark' : 'Light';
+    };
+    if (localStorage.getItem('nish-theme') === 'light') {
+      document.documentElement.dataset.theme = 'light';
+      toggle.textContent = 'Dark';
+    }
+    initC01();
+    initC02();
+    initC03();
+    initC04();
+    initC05();
+    initC06();
+    initOutcomes();
+  </script>
+
+</body>
+</html>

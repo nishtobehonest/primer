@@ -20,6 +20,7 @@ Interactive AI explainer library — learn by doing, not by reading. Each chapte
 │   ├── style.css              # Styles
 │   └── app.js                 # Checklist state, localStorage (`nv-roadmap-v1`)
 ├── context/                  # Source reading notes
+│   ├── README.md                       # Index of source files, key concepts per file
 │   ├── anthropic-evals.md              # Anthropic engineering blog — primary source for Ch01
 │   ├── hamel-evals.md                  # Hamel Husain substack notes
 │   ├── handbook-evals.md               # AI Evals for Everyone handbook notes

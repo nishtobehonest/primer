@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Sampling — Primer by Nishchay Vishwanath</title>
+  <meta name="description" content="Why MCP lets a server ask the client to call the AI model for it — and why the protocol just deprecated that idea. Six concepts, six live demos.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <button class="theme-toggle" id="theme-toggle">Light</button>
+
+  <nav class="top-nav">
+    <div class="container top-nav-inner">
+      <a href="../../">← Primer</a>
+      <a href="https://nishchay.me" target="_blank" rel="noopener">nishchay.me ↗</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <div class="container">
+      <header class="page-header">
+        <div class="chapter-badge">CHAPTER 07</div>
+        <h1 class="page-title">MCP Sampling</h1>
+        <p class="page-subtitle">
+          Based on the
+          <a href="https://modelcontextprotocol.io/specification/2025-06-18/client/sampling" target="_blank" rel="noopener">official MCP spec</a>
+          and the
+          <a href="https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/" target="_blank" rel="noopener">2026-07-28 release candidate</a>
+        </p>
+      </header>
+
+      <section class="intro-section">
+        <p class="intro-body">
+          Most of the time, your app asks a server for things, and the server answers. MCP has a weird exception called <strong>sampling</strong>, where the <em>server</em> turns around and asks <em>your app</em> to go talk to the AI model for it. It sounds like a small trick. It's actually a whole design decision about who holds the API key, who approves what the AI says, and who pays the bill.
+        </p>
+        <p class="intro-body">
+          Here's the twist: no company has published a case study proving sampling paid off — because in the <a href="https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/" target="_blank" rel="noopener">2026-07-28 spec release</a>, MCP itself deprecated sampling, about 13 months after introducing it, in favor of just calling the AI provider directly. This chapter walks through why the idea existed, how it actually works, and why the protocol changed its mind.
+        </p>
+      </section>
+    </div>
+
+    <!-- ─── 01 CLIENT-INITIATED VS. SERVER-INITIATED ──────────── -->
+    <section class="concept-section" id="concept-01">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">01</span>
+          <h2 class="section-title">WHO ASKS WHOM</h2>
+        </div>
+        <p class="section-body">
+          Normally your app (the "client") is the one that starts things — it asks the server for a file, a search result, a calculation. The server just answers. Sampling flips that around: the server is the one that starts things. It sends your app a request that says "go ask the AI model this, and bring me back the answer." That's what makes sampling unusual — the arrow points the other way.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">client → server</div>
+            <div class="stat-chip-label">the normal direction</div>
+          </div>
+          <div class="stat-chip info">
+            <div class="stat-chip-value">server → client</div>
+            <div class="stat-chip-label">sampling's direction</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-01"></div>
+      </div>
+    </section>
+
+    <!-- ─── 02 THE SAMPLING HANDSHAKE ──────────────────────────── -->
+    <section class="concept-section" id="concept-02">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">02</span>
+          <h2 class="section-title">THE SAMPLING HANDSHAKE</h2>
+        </div>
+        <p class="section-quote">"There SHOULD always be a human in the loop with the ability to deny sampling requests." — MCP spec</p>
+        <p class="section-body">
+          Think of it like this: the server writes a note asking a question. It hands the note to your app. Your app shows you the note before sending it anywhere — you can approve it or change it. Only then does your app forward it to the AI. When the AI answers, your app shows you that answer too, before handing it back to the server. Two separate "are you sure?" moments, on purpose, so nothing gets sent or returned without a human seeing it first.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">2 checkpoints</div>
+            <div class="stat-chip-label">approve request, approve response</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-chip-value">sampling/createMessage</div>
+            <div class="stat-chip-label">the actual message name</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-02"></div>
+      </div>
+    </section>
+
+    <!-- ─── 03 WHY SERVERS DON'T HOLD API KEYS ─────────────────── -->
+    <section class="concept-section" id="concept-03">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">03</span>
+          <h2 class="section-title">WHY SERVERS DON'T HOLD API KEYS</h2>
+        </div>
+        <p class="section-quote">"With no server API keys necessary." — MCP spec</p>
+        <p class="section-body">
+          The simplest way to give an MCP server AI powers is to just paste your API key into it and let it call the model directly. That works fine on your laptop. It falls apart the moment other people start using your server — now your key is paying for every stranger's request, nobody reviewed what got sent, and there's no record of any of it. Sampling exists so the server never has to hold a key at all — it just asks whoever is running it to make the call, using their own account.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">1 shared key</div>
+            <div class="stat-chip-label">naive server — everyone's cost</div>
+          </div>
+          <div class="stat-chip good">
+            <div class="stat-chip-value">0 keys held</div>
+            <div class="stat-chip-label">sampling server</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-03"></div>
+      </div>
+    </section>
+
+    <!-- ─── 04 TRANSPORT BREAKS THE PATTERN ────────────────────── -->
+    <section class="concept-section" id="concept-04">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">04</span>
+          <h2 class="section-title">TRANSPORT BREAKS THE PATTERN</h2>
+        </div>
+        <p class="section-body">
+          For the server to ask the client something, there has to be an open line between them the server can talk into whenever it wants — like a phone that's always picked up, not one you only answer when you happen to call. Running the server as a local program on the same computer (called "stdio") gives you that automatically. Hosting the server remotely over the web works too, but only if the connection is kept open and tied to one specific client. Turn on the "stateless" setting some teams use to handle more traffic, and that open line disappears — so does sampling.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip good">
+            <div class="stat-chip-value">stdio</div>
+            <div class="stat-chip-label">always works — same machine, open pipe</div>
+          </div>
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">stateless HTTP</div>
+            <div class="stat-chip-label">breaks it — no open line left</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-04"></div>
+      </div>
+    </section>
+
+    <!-- ─── 05 ROOTS AND LOGGING — THE SIBLINGS ────────────────── -->
+    <section class="concept-section" id="concept-05">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">05</span>
+          <h2 class="section-title">ROOTS AND LOGGING — THE SIBLINGS</h2>
+        </div>
+        <p class="section-body">
+          Sampling wasn't deprecated alone. Two other features that also depend on the server being able to reach the client at any moment got deprecated in the same release: "roots" (the server checking which folders it's allowed to look at) and "logging" (the server telling the client what it's doing while it works). All three share the same weak spot — they all need that always-open line between server and client.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip warn">
+            <div class="stat-chip-value">3 features</div>
+            <div class="stat-chip-label">deprecated together, same reason</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-05"></div>
+      </div>
+    </section>
+
+    <!-- ─── 06 THE DEPRECATION TIMELINE ────────────────────────── -->
+    <section class="concept-section" id="concept-06">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">06</span>
+          <h2 class="section-title">THE DEPRECATION TIMELINE</h2>
+        </div>
+        <p class="section-quote">"Server-initiated requests may now only be issued while the server is actively processing a client request." — MCP spec blog, 2026-07-28</p>
+        <p class="section-body">
+          MCP wants to let anyone run a server behind a normal load balancer, spreading traffic across many copies of the same server at random. That only works if any copy can handle any request — which means no copy is allowed to keep a private, dedicated line open to one specific client. Sampling needs exactly that private line. When those two goals collided, the spec picked the load-balancer-friendly option and walked sampling back.
+        </p>
+        <div class="stat-chips">
+          <div class="stat-chip accent">
+            <div class="stat-chip-value">~13 months</div>
+            <div class="stat-chip-label">from stable spec to deprecated</div>
+          </div>
+        </div>
+        <div class="component-card" id="component-06"></div>
+      </div>
+    </section>
+
+    <!-- ─── OUTCOMES ───────────────────────────────────────────── -->
+    <section class="outcomes-section" id="outcomes">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-number">→</span>
+          <h2 class="section-title">SO SHOULD YOU USE IT?</h2>
+        </div>
+        <p class="section-body">
+          No company has published numbers on sampling paying off — this isn't that kind of feature. What we do have is a clear, sourced chain of cause and effect, and a real practitioner (running an actual production MCP server) who chose not to use sampling at all. Use that instead of a made-up ROI number.
+        </p>
+        <div class="component-card" id="component-outcomes"></div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <div class="container footer-inner">
+        <span>Built by <a href="https://nishchay.me" target="_blank" rel="noopener">Nishchay Vishwanath</a></span>
+        <span class="footer-sources">
+          Sources:
+          <a href="https://modelcontextprotocol.io/specification/2025-06-18/client/sampling" target="_blank" rel="noopener">MCP Spec</a> ·
+          <a href="https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/" target="_blank" rel="noopener">2026-07-28 RC</a> ·
+          <a href="https://workos.com/blog/mcp-sampling" target="_blank" rel="noopener">WorkOS</a> ·
+          <a href="https://imti.co/mcp-sampling/" target="_blank" rel="noopener">IMTI</a>
+        </span>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="components.js"></script>
+  <script>
+    const toggle = document.getElementById('theme-toggle');
+    toggle.onclick = function() {
+      const t = document.documentElement.dataset.theme === 'light' ? '' : 'light';
+      document.documentElement.dataset.theme = t;
+      localStorage.setItem('nish-theme', t);
+      toggle.textContent = t === 'light' ? 'Dark' : 'Light';
+    };
+    if (localStorage.getItem('nish-theme') === 'light') {
+      document.documentElement.dataset.theme = 'light';
+      toggle.textContent = 'Dark';
+    }
+    initC01();
+    initC02();
+    initC03();
+    initC04();
+    initC05();
+    initC06();
+    initOutcomes();
+  </script>
+
+</body>
+</html>

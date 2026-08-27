@@ -13,3 +13,7 @@ Notes and references for concepts explored in this project.
 | [04-harness-anthropic-effective-harnesses.md](04-harness-anthropic-effective-harnesses.md) | Anthropic Engineering Blog | Initializer/coding-agent split, session-bridging artifacts |
 | [04-harness-anthropic-harness-design.md](04-harness-anthropic-harness-design.md) | Anthropic Engineering Blog | Planner/generator/evaluator, solo-vs-harness cost data |
 | [04-harness-faros-ai.md](04-harness-faros-ai.md) | Faros AI Blog | Agent = Model + Harness formula, 5 harness layers |
+| [07-mcp-sampling-spec-docs.md](07-mcp-sampling-spec-docs.md) | Official MCP spec + 2026-07-28 RC blog | Sampling protocol messages, the deprecation and why |
+| [07-mcp-sampling-workos.md](07-mcp-sampling-workos.md) | WorkOS Blog | Plain-language sampling explainer, support-triage example |
+| [07-mcp-sampling-imti.md](07-mcp-sampling-imti.md) | IMTI Blog | Practitioner running a real MCP server who chose not to use sampling |
+| [07-mcp-sampling-course-notes.md](07-mcp-sampling-course-notes.md) | Nish's own course notes | Transport mechanics — stdio, StreamableHTTP, stateless HTTP |

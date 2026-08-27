@@ -28,7 +28,11 @@ Interactive AI explainer library — learn by doing, not by reading. Each chapte
 │   ├── 03-agentic-systems-fractional-ai.md # Fractional AI Engineering blog — context bloat + footprint
 │   ├── 04-harness-anthropic-effective-harnesses.md # Anthropic — initializer/coding-agent session bridging
 │   ├── 04-harness-anthropic-harness-design.md      # Anthropic — planner/generator/evaluator, cost data
-│   └── 04-harness-faros-ai.md                      # Faros AI — Agent = Model + Harness, 5 layers
+│   ├── 04-harness-faros-ai.md                      # Faros AI — Agent = Model + Harness, 5 layers
+│   ├── 07-mcp-sampling-spec-docs.md                # Official MCP spec + 2026-07-28 RC deprecation
+│   ├── 07-mcp-sampling-workos.md                   # WorkOS — sampling explainer
+│   ├── 07-mcp-sampling-imti.md                     # IMTI — practitioner who chose not to use sampling
+│   └── 07-mcp-sampling-course-notes.md             # Nish's own course notes — transport mechanics
 │
 └── chapters/
     ├── 01-evals/             # Chapter 01: AI Evals (live)
@@ -46,9 +50,14 @@ Interactive AI explainer library — learn by doing, not by reading. Each chapte
     │   ├── index.html        # The page — lab.nishchay.me/chapters/03-agentic-systems/
     │   ├── style.css         # Styles (nishtobehonest design tokens)
     │   └── components.js     # The 6 interactive components
-    └── 04-harness-engineering/  # Chapter 04: Agent Harness Engineering (live)
+    ├── 04-harness-engineering/  # Chapter 04: Agent Harness Engineering (live)
+    │   ├── SPEC.md           # Full build spec
+    │   ├── index.html        # The page — lab.nishchay.me/chapters/04-harness-engineering/
+    │   ├── style.css         # Styles (nishtobehonest design tokens)
+    │   └── components.js     # The 6 interactive components
+    └── 07-mcp-sampling/      # Chapter 07: MCP Sampling (live)
         ├── SPEC.md           # Full build spec
-        ├── index.html        # The page — lab.nishchay.me/chapters/04-harness-engineering/
+        ├── index.html        # The page — lab.nishchay.me/chapters/07-mcp-sampling/
         ├── style.css         # Styles (nishtobehonest design tokens)
         └── components.js     # The 6 interactive components
 ```
@@ -83,6 +92,7 @@ Both dark (default) and light themes supported via `[data-theme="light"]` on `<h
 | 04 | Agent Harness Engineering | Live | /chapters/04-harness-engineering/ |
 | 05 | RAG | Planned | — |
 | 06 | Fine-tuning | Planned | — |
+| 07 | MCP Sampling | Live | /chapters/07-mcp-sampling/ |
 
 Chapter card copy pattern (index.html):
 - Each chapter description should answer a specific failure mode from the "How to avoid AI slop?" theme
@@ -92,6 +102,7 @@ Chapter card copy pattern (index.html):
 - Ch04: "It looked done in 20 minutes. It didn't work. The harness around the model — not a smarter one — is what closes that gap."
 - Ch05 (planned): "Hallucinations are a retrieval problem. Grounding your AI in real data is how you fix it."
 - Ch06 (planned): "Generic model, generic output. Fine-tuning is how you make AI care about your specific problem."
+- Ch07: "You gave your server its own API key so it could call the AI directly. The protocol's own fix for that got deprecated within a year — here's why."
 
 When adding a new chapter:
 1. Create `chapters/NN-slug/` with `index.html`, `style.css`, component JS
@@ -135,6 +146,8 @@ Key voice rules:
 - Em dashes are fine in prose for rhythm and contrast
 - Keep paragraphs short — 2–3 sentences max
 - End with the series line + link
+
+**Writing voice — 8th-grade-simple (all chapters, not just prose above):** Every explanation on a chapter page — intro, section bodies, component-setup lines, key insights — should read at an 8th-grade level. Plain language first, the real technical term named right after, not instead of. Short sentences, one idea each. Use everyday analogies before diving into jargon. This applies to `/primer-chapter` builds going forward.
 
 ## Chapter 01: AI Evals
 
@@ -210,3 +223,22 @@ Sources: `context/04-harness-anthropic-effective-harnesses.md` · `context/04-ha
 | 06 | Harness artifacts in the wild | Step through an annotated (paraphrased) Claude Code session opening this exact repo — CLAUDE.md context, a memory recall, a skill invocation |
 
 All numbers (the $9/20min vs. $200/6hr comparison, the DAW round-by-round cost table, the 27-criteria Sprint 3 example) are Anthropic's own reported figures — no benchmark or accuracy metric is implied anywhere, since neither source discloses one.
+
+## Chapter 07: MCP Sampling
+
+Sources: `context/07-mcp-sampling-spec-docs.md` · `context/07-mcp-sampling-workos.md` · `context/07-mcp-sampling-imti.md` · `context/07-mcp-sampling-course-notes.md`
+
+**No company case study exists for this topic** — MCP Sampling is a protocol mechanism, not a product companies report business outcomes from. Substituted with a verified, dated spec event: Sampling (with Roots and Logging) was formally deprecated in the 2026-07-28 MCP spec release candidate, about 13 months after shipping in the 2025-06-18 stable spec — in favor of direct LLM-provider integration and a stateless protocol core. This deviation is documented in the chapter's own SPEC.md.
+
+6 interactive components, each teaching one part of the sampling mechanism — Tool Call Trace theme (annotated MCP message sequence across Server / Client / User / LLM):
+
+| # | Concept | What the component does |
+|---|---|---|
+| 01 | Who asks whom | Toggle between a normal tool call (client asks, server answers) and a sampling call (server asks, client asks the AI) — arrows visibly flip direction |
+| 02 | The sampling handshake | Step through the real 8-step flow from the spec's own sequence diagram, including both required human-approval checkpoints |
+| 03 | Why servers don't hold API keys | Before/after: naive server (own key, calls the AI directly) vs. sampling server (no key) — toggle "make it public" to reveal what breaks |
+| 04 | Transport breaks the pattern | Pick a transport (stdio / stateful HTTP / stateless HTTP); see whether the server-initiated sampling request can even be delivered |
+| 05 | Roots and Logging — the siblings | Three-card comparison of the features deprecated in the same RC, and what replaces each |
+| 06 | The deprecation timeline | Click through 2024 → 2025-06-18 → 2026-07-28 with sourced quotes at each stage |
+
+Business outcomes section is likewise substituted: a sourced attribution chain (no API key → needs server-initiated messages → needs stateful transport → conflicts with stateless scaling → deprecated) plus a "does your server actually need this" decision tool built from a real practitioner's (IMTI) rule of thumb, in place of the usual ROI slider — since no dollar figure exists to scale.
